@@ -46,6 +46,7 @@ impl CSVReader {
         let buf = self.reader.next().unwrap().unwrap();
         self.parse(buf)
     }
+
     pub fn keys(&self) -> impl Iterator<Item = String> + '_ {
         self.header.iter().enumerate().map(|(i, k)| k.clone())
     }
@@ -59,6 +60,10 @@ impl Iterator for CSVReader {
         match self.reader.next() {
             Some(Ok(line)) => {
                 let row = self.parse(line);
+
+                if row.is_empty() {
+                    return Some(Ok(data));
+                }
 
                 self.header.iter().enumerate().any(|(i, k)| {
                     data.insert(k.to_string(), row.get(i).unwrap().to_string());
@@ -100,9 +105,10 @@ mod tests {
             let line = line.unwrap();
 
             //let numval:i32 = line["number"].parse().unwrap();
-            let numval:i32 = line.get("number").unwrap().parse().unwrap();
+            //let numval:i32 = line.get("number").unwrap().parse().unwrap();
 
-            println!("string: {:8}, number: {:06}", line["string"], numval);
+            //println!("string: {:8}, number: {:06}", line["string"], numval);
+            println!("{:?}", line);
         }
     }
 
